@@ -9,7 +9,6 @@
     <!-- Lucide Icons para ícones visuais -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Estilos especiais para quando o relatório for impresso ou salvo em PDF */
         @media print {
             body * { visibility: hidden; }
             #printableReport, #printableReport * { visibility: visible; }
@@ -60,7 +59,7 @@
                             <i data-lucide="calendar" class="w-5 h-5 text-indigo-600"></i>
                             Registro Noturno da Turma
                         </h2>
-                        <p class="text-sm text-slate-500">Selecione a data e registre os acontecimentos do dia de cada criança.</p>
+                        <p class="text-sm text-slate-500">Selecione a data e registre o comportamento e acontecimentos do dia.</p>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Data da Rotina</label>
@@ -79,7 +78,7 @@
 
                     <!-- Tags / Categorias Rápidas -->
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Acontecimentos do Dia (Clique nas opções):</label>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Comportamento e Acontecimentos (Clique nas opções):</label>
                         <div id="tagsContainer" class="flex flex-wrap gap-2">
                             <!-- Tags carregadas dinamicamente via JS -->
                         </div>
@@ -88,7 +87,7 @@
                     <!-- Observação em Texto Livre -->
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Observações Adicionais / Detalhes do Dia</label>
-                        <textarea id="diaryNotes" rows="3" placeholder="Ex: Hoje ela conseguiu compartilhar os blocos com o coleguinha pela primeira vez..." class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"></textarea>
+                        <textarea id="diaryNotes" rows="3" placeholder="Ex: Criança comeu bem, estava alegre mas apresentou dificuldades na hora de compartilhar..." class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"></textarea>
                     </div>
 
                     <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg transition shadow-md flex justify-center items-center gap-2">
@@ -115,7 +114,7 @@
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 no-print">
                 <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
                     <i data-lucide="file-check-2" class="w-5 h-5 text-indigo-600"></i>
-                    Gerar Relatório Individual
+                    Gerar Relatório Mensal por Aluno
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <div>
@@ -131,7 +130,7 @@
                     <div class="flex items-end">
                         <button onclick="generateReport()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 rounded-lg transition shadow flex justify-center items-center gap-2 text-sm">
                             <i data-lucide="sparkles" class="w-4 h-4"></i>
-                            <span>Gerar Relatório</span>
+                            <span>Gerar Relatório do Mês</span>
                         </button>
                     </div>
                 </div>
@@ -177,4 +176,4 @@
                 </h2>
                 <form id="addStudentForm" class="flex gap-3">
                     <input type="text" id="studentNameInput" placeholder="Nome completo da criança..." required class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium
+                    <button type="submit" class="bg
