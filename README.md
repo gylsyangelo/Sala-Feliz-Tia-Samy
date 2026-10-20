@@ -368,4 +368,14 @@
             }
         });
 
-        function removeStudent
+        function removeStudent(index) {
+            if (confirm(`Deseja remover ${students[index]} da lista?`)) {
+                students.splice(index, 1);
+                localStorage.setItem('app_students', JSON.stringify(students));
+                updateStudentDropdowns();
+                renderStudentsList();
+            }
+        }
+    </script>
+</body>
+</html>
