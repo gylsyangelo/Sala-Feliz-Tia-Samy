@@ -1,13 +1,12 @@
-[codigo app samila index.html.txt.txt](https://github.com/user-attachments/files/33730008/codigo.app.samila.index.html.txt.txt)
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diário & Relatório da Educação Infantil</title>
-    <!-- Tailwind CSS CDN para estilização rápida e responsiva -->
+    <!-- Tailwind CSS para estilização moderna e responsiva -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons para os ícones do sistema -->
+    <!-- Lucide Icons para ícones visuais -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         /* Estilos especiais para quando o relatório for impresso ou salvo em PDF */
@@ -23,12 +22,12 @@
 
     <!-- Cabeçalho Principal -->
     <header class="bg-indigo-600 text-white shadow-md no-print">
-        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
             <div class="flex items-center space-x-3">
-                <i data-lucide="book-open-check" class="w-8 h-8"></i>
+                <i data-lucide="book-open-check" class="w-8 h-8 text-indigo-200"></i>
                 <div>
-                    <h1 class="text-xl font-bold">Relatórios Infantis</h1>
-                    <p class="text-xs text-indigo-200">Diário de Sala e Gerador do Mês</p>
+                    <h1 class="text-xl font-bold tracking-tight">Relatórios Infantis</h1>
+                    <p class="text-xs text-indigo-200">Diário da Turma & Gerador Mensal</p>
                 </div>
             </div>
             <!-- Botões de Navegação -->
@@ -61,7 +60,7 @@
                             <i data-lucide="calendar" class="w-5 h-5 text-indigo-600"></i>
                             Registro Noturno da Turma
                         </h2>
-                        <p class="text-sm text-slate-500">Selecione a data e registre os acontecimentos do dia.</p>
+                        <p class="text-sm text-slate-500">Selecione a data e registre os acontecimentos do dia de cada criança.</p>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Data da Rotina</label>
@@ -147,7 +146,7 @@
                     </div>
                     <button onclick="window.print()" class="no-print bg-slate-800 hover:bg-slate-900 text-white text-xs px-3 py-2 rounded-lg transition flex items-center gap-2">
                         <i data-lucide="printer" class="w-4 h-4"></i>
-                        <span>Imprimir / PDF</span>
+                        <span>Imprimir / Salvar PDF</span>
                     </button>
                 </div>
 
@@ -178,243 +177,4 @@
                 </h2>
                 <form id="addStudentForm" class="flex gap-3">
                     <input type="text" id="studentNameInput" placeholder="Nome completo da criança..." required class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition flex items-center gap-2">
-                        <i data-lucide="plus" class="w-4 h-4"></i>
-                        <span>Adicionar</span>
-                    </button>
-                </form>
-            </div>
-
-            <!-- Lista de Alunos -->
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                <h3 class="text-md font-bold text-slate-800 mb-4">Alunos da Turma</h3>
-                <div id="studentsList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                    <!-- Lista dinâmica de alunos -->
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- LÓGICA EM JAVASCRIPT -->
-    <script>
-        // --- 1. DADOS DE INICIALIZAÇÃO & ARMAZENAMENTO (localStorage) ---
-        let students = JSON.parse(localStorage.getItem('app_students')) || ['Ana Silva', 'Lucas Gabriel', 'Sofia Costa'];
-        let logs = JSON.parse(localStorage.getItem('app_logs')) || [];
-
-        // Lista de Tags Rápidas divididas por Categorias
-        const availableTags = [
-            { id: 'eat_good', label: '🍎 Comeu bem', type: 'good' },
-            { id: 'eat_bad', label: '🥗 Não comeu tudo', type: 'warn' },
-            { id: 'behavior_good', label: '⭐ Muito bem comportado(a)', type: 'good' },
-            { id: 'behavior_issue', label: '⚠️ Teve momentos de desobediência', type: 'warn' },
-            { id: 'sick', label: '🤒 Teve indisposição/Sintomas', type: 'danger' },
-            { id: 'social_fast', label: '🚀 Desenvolvimento rápido', type: 'good' },
-            { id: 'social_diff', label: '🧩 Dificuldades em atividades/socialização', type: 'warn' },
-            { id: 'nap_good', label: '😴 Dormiu/Descansou bem', type: 'good' }
-        ];
-
-        let selectedTags = [];
-
-        // --- 2. CICLO DE VIDA E INICIALIZAÇÃO ---
-        document.addEventListener('DOMContentLoaded', () => {
-            // Define data de hoje no formulário
-            document.getElementById('diaryDate').valueToDate = new Date();
-            document.getElementById('diaryDate').value = new Date().toISOString().split('T')[0];
-            document.getElementById('reportMonth').value = new Date().toISOString().slice(0, 7);
-
-            renderTags();
-            updateStudentDropdowns();
-            renderStudentsList();
-            renderRecentLogs();
-            lucide.createIcons();
-        });
-
-        // Alternância de Abas
-        function switchTab(tabName) {
-            ['diary', 'report', 'students'].forEach(t => {
-                document.getElementById(`view-${t}`).classList.add('hidden');
-                document.getElementById(`tabBtn-${t}`).className = "px-4 py-2 rounded-lg font-medium text-sm transition hover:bg-indigo-500 text-indigo-100 flex items-center gap-2";
-            });
-
-            document.getElementById(`view-${tabName}`).classList.remove('hidden');
-            document.getElementById(`tabBtn-${tabName}`).className = "px-4 py-2 rounded-lg font-medium text-sm transition bg-indigo-700 text-white shadow-inner flex items-center gap-2";
-        }
-
-        // --- 3. GESTÃO DE TAGS RÁPIDAS ---
-        function renderTags() {
-            const container = document.getElementById('tagsContainer');
-            container.innerHTML = availableTags.map(tag => `
-                <button type="button" onclick="toggleTag('${tag.id}')" id="tagBtn-${tag.id}" 
-                    class="px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200 transition flex items-center gap-1 bg-slate-100 text-slate-700 hover:bg-slate-200">
-                    <span>${tag.label}</span>
-                </button>
-            `).join('');
-        }
-
-        function toggleTag(tagId) {
-            const index = selectedTags.indexOf(tagId);
-            const btn = document.getElementById(`tagBtn-${tagId}`);
-
-            if (index === -1) {
-                selectedTags.push(tagId);
-                btn.classList.remove('bg-slate-100', 'text-slate-700');
-                btn.classList.add('bg-indigo-600', 'text-white', 'border-indigo-600');
-            } else {
-                selectedTags.splice(index, 1);
-                btn.classList.remove('bg-indigo-600', 'text-white', 'border-indigo-600');
-                btn.classList.add('bg-slate-100', 'text-slate-700');
-            }
-        }
-
-        // --- 4. REGISTRO DIÁRIO ---
-        document.getElementById('diaryForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            const student = document.getElementById('diaryStudentSelect').value;
-            const date = document.getElementById('diaryDate').value;
-            const notes = document.getElementById('diaryNotes').value;
-
-            if (!student) return alert('Selecione uma criança.');
-
-            const newLog = {
-                id: Date.now(),
-                student,
-                date,
-                tags: [...selectedTags],
-                notes
-            };
-
-            logs.unshift(newLog);
-            localStorage.setItem('app_logs', JSON.stringify(logs));
-
-            // Limpa formulário
-            document.getElementById('diaryNotes').value = '';
-            selectedTags = [];
-            renderTags();
-            renderRecentLogs();
-            alert('Registro do dia salvo com sucesso!');
-        });
-
-        function renderRecentLogs() {
-            const container = document.getElementById('recentLogs');
-            if (logs.length === 0) {
-                container.innerHTML = `<p class="text-sm text-slate-400 italic">Nenhum registro encontrado.</p>`;
-                return;
-            }
-
-            container.innerHTML = logs.slice(0, 5).map(log => {
-                const tagLabels = log.tags.map(tid => {
-                    const found = availableTags.find(t => t.id === tid);
-                    return found ? `<span class="bg-indigo-50 text-indigo-700 text-[10px] px-2 py-0.5 rounded-full border border-indigo-100">${found.label}</span>` : '';
-                }).join(' ');
-
-                return `
-                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 text-sm space-y-1">
-                        <div class="flex justify-between font-bold text-slate-700">
-                            <span>${log.student}</span>
-                            <span class="text-xs text-slate-400">${log.date}</span>
-                        </div>
-                        <div class="flex flex-wrap gap-1">${tagLabels}</div>
-                        ${log.notes ? `<p class="text-xs text-slate-600 mt-1">"${log.notes}"</p>` : ''}
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // --- 5. GERAÇÃO DE RELATÓRIO MENSAL & ALGORITMO NARRATIVO ---
-        function generateReport() {
-            const student = document.getElementById('reportStudentSelect').value;
-            const monthStr = document.getElementById('reportMonth').value; // YYYY-MM
-
-            if (!student || !monthStr) return alert('Selecione o aluno e o mês.');
-
-            // Filtra registros do aluno no mês correspondente
-            const studentLogs = logs.filter(l => l.student === student && l.date.startsWith(monthStr));
-
-            document.getElementById('repStudentName').innerText = student;
-            document.getElementById('repPeriod').innerText = `Período: Mês ${monthStr.split('-')[1]}/${monthStr.split('-')[0]}`;
-            
-            const printableArea = document.getElementById('printableReport');
-            printableArea.classList.remove('hidden');
-
-            if (studentLogs.length === 0) {
-                document.getElementById('repText').innerText = "Não existem anotações registradas para este aluno no mês selecionado.";
-                document.getElementById('repLogList').innerHTML = "<p class='text-xs text-slate-400'>Nenhum histórico encontrado.</p>";
-                return;
-            }
-
-            // Análise estatística simples das tags do mês
-            let tagCounts = {};
-            studentLogs.forEach(l => {
-                l.tags.forEach(t => {
-                    tagCounts[t] = (tagCounts[t] || 0) + 1;
-                });
-            });
-
-            // Construção do Parecer Narrativo
-            let narrative = `Durante o período avaliado, a criança ${student} apresentou um percurso de aprendizagem dinâmico na rotina escolar.\n\n`;
-
-            if (tagCounts['eat_good'] > 2) narrative += `Demonstrou excelente adaptação aos momentos das refeições, alimentando-se muito bem. `;
-            if (tagCounts['social_fast'] > 0) narrative += `Destacou-se pelo desenvolvimento acelerado em suas habilidades motoras e cognitivas. `;
-            if (tagCounts['behavior_good'] > 2) narrative += `Manteve um excelente comportamento e convivência harmoniosa com o grupo. `;
-            if (tagCounts['social_diff'] > 0) narrative += `Observamos momentos pontuais que demandam maior mediação pedagógica nas interações e atividades. `;
-            if (tagCounts['sick'] > 0) narrative += `Registramos episódios de indisposição em determinados dias, demandando maior acolhimento da equipe. `;
-
-            narrative += `\n\nConclui-se que o aluno segue evoluindo dentro do esperado para a sua faixa etária.`;
-
-            document.getElementById('repText').innerText = narrative;
-
-            // Lista detalhada dia a dia
-            document.getElementById('repLogList').innerHTML = studentLogs.map(l => `
-                <div class="p-3 bg-slate-50 rounded-lg text-xs border border-slate-200">
-                    <span class="font-bold text-slate-700">${l.date}:</span> 
-                    ${l.tags.map(tid => availableTags.find(t => t.id === tid)?.label).filter(Boolean).join(', ')}
-                    ${l.notes ? `<span class="block text-slate-500 mt-1 italic">Obs: ${l.notes}</span>` : ''}
-                </div>
-            `).join('');
-        }
-
-        // --- 6. GESTÃO DE ALUNOS ---
-        function updateStudentDropdowns() {
-            const options = `<option value="">-- Escolha uma criança --</option>` + 
-                students.map(s => `<option value="${s}">${s}</option>`).join('');
-            
-            document.getElementById('diaryStudentSelect').innerHTML = options;
-            document.getElementById('reportStudentSelect').innerHTML = options;
-        }
-
-        function renderStudentsList() {
-            const container = document.getElementById('studentsList');
-            container.innerHTML = students.map((s, idx) => `
-                <div class="flex justify-between items-center p-3 bg-slate-50 rounded-lg border border-slate-200 text-sm font-medium">
-                    <span>${s}</span>
-                    <button onclick="removeStudent(${idx})" class="text-rose-500 hover:text-rose-700 text-xs">Excluir</button>
-                </div>
-            `).join('');
-        }
-
-        document.getElementById('addStudentForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const input = document.getElementById('studentNameInput');
-            const name = input.value.trim();
-            if (name && !students.includes(name)) {
-                students.push(name);
-                localStorage.setItem('app_students', JSON.stringify(students));
-                input.value = '';
-                updateStudentDropdowns();
-                renderStudentsList();
-            }
-        });
-
-        function removeStudent(index) {
-            if (confirm(`Deseja remover ${students[index]} da lista?`)) {
-                students.splice(index, 1);
-                localStorage.setItem('app_students', JSON.stringify(students));
-                updateStudentDropdowns();
-                renderStudentsList();
-            }
-        }
-    </script>
-</body>
-</html>
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium
